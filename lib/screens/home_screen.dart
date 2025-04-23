@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestore_service.dart';
 import '../widgets/pet_card.dart';
 import '../models/pet_model.dart';
 import 'add_pet_screen.dart';
-import '../favorites_screen.dart';  // Import Favorites Screen
-import 'home_screen.dart';  // HomeScreen will now be part of a MainScreen
+import '../favorites_screen.dart';
+import 'login_screen.dart';  // Import for navigation after logout
 
 class HomeScreen extends StatelessWidget {
   final FirestoreService firestoreService = FirestoreService();
@@ -12,7 +13,23 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Adopt a Pet")),
+      appBar: AppBar(
+        title: Text("Adopt a Pet"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            tooltip: "Logout",
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<List<Pet>>(
         future: firestoreService.getPets(),
         builder: (context, snapshot) {
@@ -60,9 +77,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[ // Removed 'const' here
-    HomeScreen(),         // Your existing HomeScreen widget
-    FavoritesScreen(),    // Your FavoritesScreen widget
+  static List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
+    FavoritesScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -74,7 +91,23 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Adopt a Pet")),
+      appBar: AppBar(
+        title: Text("Adopt a Pet"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            tooltip: "Logout",
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
